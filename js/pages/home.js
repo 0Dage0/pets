@@ -108,9 +108,9 @@ const HomePage = {
     },
 
     // 加载宠物数据
-    loadPets(container, explore) {
+    async loadPets(container, explore) {
         const filters = {
-            type: this.currentFilter,
+            type: this.currentFilter !== 'all' ? this.currentFilter : null,
             status: 'available'
         };
 
@@ -118,7 +118,26 @@ const HomePage = {
             filters.keyword = this.keyword;
         }
 
-        this.pets = Store.getFilteredPets(filters);
+        // 尝试使用 API
+        if (API.baseURL) {
+            try {
+                const params = {};
+                if (filters.type) params.type = filters.type;
+                if (filters.status) params.status = filters.status;
+                if (filters.keyword) params.keyword = filters.keyword;
+                params.size = 50;
+
+                const pageData = await API.getPets(params);
+                if (pageData && pageData.content) {
+                    this.pets = pageData.content;
+                }
+            } catch (e) {
+                console.log('API not available, using local data');
+                this.pets = Store.getFilteredPets(filters);
+            }
+        } else {
+            this.pets = Store.getFilteredPets(filters);
+        }
 
         if (this.pets.length === 0) {
             const emptyState = Components.createEmptyState('🔍', explore ? '没有找到匹配的宠物' : '暂无待领养的宠物');

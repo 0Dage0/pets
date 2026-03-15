@@ -1,0 +1,18 @@
+# 云端部署 - 使用外部数据库时使用此配置
+# docker-compose -f deploy-compose.yml up -d
+
+version: "3.8"
+
+services:
+  backend:
+    image: pet-adoption-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=jdbc:mysql://your-mysql-host:3306/pet_adoption
+      - DB_USER=your_db_user
+      - DB_PASSWORD=your_db_password
+      - JWT_SECRET=your-very-long-secret-key-here-change-in-production
+      - CORS_ORIGINS=*
+    restart: unless-stopped

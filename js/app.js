@@ -20,11 +20,13 @@ const App = {
         this.sidebar = document.getElementById('sidebar');
         this.sidebarNav = document.getElementById('sidebarNav');
 
-        // 初始化模拟数据
-        MockData.initDemoData();
+        // 初始化模拟数据（仅在非API模式或无数据时）
+        if (!API.isLoggedIn()) {
+            MockData.initDemoData();
+        }
 
-        // 检查登录状态
-        this.currentUser = Store.getCurrentUser();
+        // 检查登录状态 - 优先使用 API
+        this.currentUser = API.getCurrentUser() || Store.getCurrentUser();
 
         // 初始化页面
         this.initPages();
@@ -109,43 +111,69 @@ const App = {
         });
 
         // 登录表单提交
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const phone = document.getElementById('loginPhone').value;
             const password = document.getElementById('loginPassword').value;
 
-            const user = Store.login(phone, password);
-            if (user) {
-                this.currentUser = user;
-                this.updateUI();
-                this.updateBadges();
-                closeModal();
-                this.showToast('登录成功', 'success');
-                // 刷新当前页面
-                this.navigateTo(this.currentPage);
-            } else {
-                this.showToast('手机号或密码错误', 'error');
+            try {
+                const response = await API.login(phone, password);
+                if (response) {
+                    this.currentUser = API.getCurrentUser();
+                    this.updateUI();
+                    this.updateBadges();
+                    closeModal();
+                    this.showToast('登录成功', 'success');
+                    // 刷新当前页面
+                    this.navigateTo(this.currentPage);
+                }
+            } catch (error) {
+                // Fallback to localStorage
+                const user = Store.login(phone, password);
+                if (user) {
+                    this.currentUser = user;
+                    this.updateUI();
+                    this.updateBadges();
+                    closeModal();
+                    this.showToast('登录成功', 'success');
+                    this.navigateTo(this.currentPage);
+                } else {
+                    this.showToast('手机号或密码错误', 'error');
+                }
             }
         });
 
         // 注册表单提交
-        registerForm.addEventListener('submit', (e) => {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const nickname = document.getElementById('registerNickname').value;
             const phone = document.getElementById('registerPhone').value;
             const password = document.getElementById('registerPassword').value;
             const city = document.getElementById('registerCity').value;
 
-            const result = Store.register(nickname, phone, password, city);
-            if (result.error) {
-                this.showToast(result.error, 'error');
-            } else {
-                this.currentUser = result;
-                this.updateUI();
-                this.updateBadges();
-                closeModal();
-                this.showToast('注册成功，欢迎加入毛毛家！', 'success');
-                this.navigateTo('home');
+            try {
+                const response = await API.register(nickname, phone, password, city);
+                if (response) {
+                    this.currentUser = API.getCurrentUser();
+                    this.updateUI();
+                    this.updateBadges();
+                    closeModal();
+                    this.showToast('注册成功，欢迎加入毛毛家！', 'success');
+                    this.navigateTo('home');
+                }
+            } catch (error) {
+                // Fallback to localStorage
+                const result = Store.register(nickname, phone, password, city);
+                if (result.error) {
+                    this.showToast(result.error, 'error');
+                } else {
+                    this.currentUser = result;
+                    this.updateUI();
+                    this.updateBadges();
+                    closeModal();
+                    this.showToast('注册成功，欢迎加入毛毛家！', 'success');
+                    this.navigateTo('home');
+                }
             }
         });
     },
@@ -278,10 +306,36 @@ const App = {
     },
 
     // 更新徽章
-    updateBadges() {
+    async updateBadges() {
         // 更新消息未读数
         if (this.currentUser) {
-            const unreadCount = Store.getTotalUnreadCount(this.currentUser.id);
+            let unreadCount = 0;
+            let notificationCount = 0;
+
+            // 优先使用 API
+            if (API.isLoggedIn()) {
+                try {
+                    const conversations = await API.getConversations();
+                    if (conversations) {
+                        unreadCount = conversations.reduce((sum, c) => sum + (c.unreadCount?.[this.currentUser.id] || 0), 0);
+                    }
+                } catch (e) {
+                    unreadCount = Store.getTotalUnreadCount(this.currentUser.id);
+                }
+
+                try {
+                    const result = await API.getUnreadNotificationCount();
+                    if (result) {
+                        notificationCount = result.count || 0;
+                    }
+                } catch (e) {
+                    notificationCount = Store.getUnreadNotificationCount(this.currentUser.id);
+                }
+            } else {
+                unreadCount = Store.getTotalUnreadCount(this.currentUser.id);
+                notificationCount = Store.getUnreadNotificationCount(this.currentUser.id);
+            }
+
             const chatBadge = document.getElementById('chatBadge');
             if (unreadCount > 0) {
                 chatBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
@@ -290,8 +344,6 @@ const App = {
                 chatBadge.style.display = 'none';
             }
 
-            // 更新通知未读数
-            const notificationCount = Store.getUnreadNotificationCount(this.currentUser.id);
             const notificationBadge = document.getElementById('notificationBadge');
             if (notificationCount > 0) {
                 notificationBadge.textContent = notificationCount > 99 ? '99+' : notificationCount;

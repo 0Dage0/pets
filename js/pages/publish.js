@@ -562,10 +562,27 @@ const PublishPage = {
     },
 
     // 提交宠物
-    submitPet() {
+    async submitPet() {
         App.showLoading();
 
-        // 创建宠物
+        try {
+            // 尝试使用 API
+            if (API.isLoggedIn()) {
+                const pet = await API.createPet(this.petData);
+                if (pet) {
+                    App.hideLoading();
+                    App.showToast('发布成功！', 'success');
+                    setTimeout(() => {
+                        App.navigateTo('home');
+                    }, 1000);
+                    return;
+                }
+            }
+        } catch (e) {
+            console.log('API createPet failed, using localStorage');
+        }
+
+        // Fallback to localStorage
         const pet = Store.createPet({
             ...this.petData,
             ownerId: App.currentUser.id
