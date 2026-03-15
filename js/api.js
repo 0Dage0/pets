@@ -4,9 +4,8 @@
  */
 
 const API = {
-    // API 基础 URL - 在生产环境修改为你的后端地址
-    // 例如: 'https://your-backend.onrender.com' 或使用环境变量
-    baseURL: window.API_URL || '',
+    // API 基础 URL - 后端地址
+    baseURL: 'https://pets-backend-ohe0.onrender.com',
 
     // 存储 token 的键名
     TOKEN_KEY: 'pets_token',
