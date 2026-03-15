@@ -14,3 +14,16 @@ Thumbs.db
 # Local env
 .env
 .env.local
+
+# Backend build
+backend/target/
+backend/*.class
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+
+# Logs
+*.log
+
+# Temp
+*.tmp
