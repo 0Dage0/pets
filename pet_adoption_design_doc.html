@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>毛毛家 · 宠物领养平台 — 产品设计文档</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ───────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#E8593C;
+  --brand-light:#FFF0EC;
+  --brand-dark:#B83D24;
+  --ink:#1A1612;
+  --ink-2:#4A4540;
+  --ink-3:#8A8580;
+  --line:#EAE8E4;
+  --line-2:#D4D0CC;
+  --bg:#FAFAF8;
+  --bg-2:#F4F2EE;
+  --bg-3:#EDE9E3;
+  --white:#FFFFFF;
+  --success:#1D9E75;
+  --warn:#BA7517;
+  --info:#185FA5;
+  --r:10px;
+  --r-lg:16px;
+  --shadow:0 2px 12px rgba(0,0,0,.06);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.10);
+}
+
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans SC',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.75;
+}
+
+/* ── Typography ─────────────────────────────────────── */
+h1,h2,h3,h4{font-weight:700;line-height:1.25;letter-spacing:-0.02em}
+h1{font-size:clamp(28px,4vw,44px);color:var(--ink)}
+h2{font-size:clamp(20px,2.8vw,28px);color:var(--ink)}
+h3{font-size:18px;color:var(--ink)}
+h4{font-size:14px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);font-weight:500}
+p{color:var(--ink-2);line-height:1.8}
+strong{color:var(--ink);font-weight:500}
+code{font-family:'Courier New',monospace;background:var(--bg-3);padding:2px 7px;border-radius:5px;font-size:12px;color:var(--brand-dark)}
+
+/* ── Layout ─────────────────────────────────────────── */
+.container{max-width:1080px;margin:0 auto;padding:0 28px}
+.section{padding:72px 0}
+.section + .section{border-top:1px solid var(--line)}
+
+/* ── Sidebar Nav ────────────────────────────────────── */
+.layout{display:flex;min-height:100vh}
+.sidebar{
+  width:240px;flex-shrink:0;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--white);
+  border-right:1px solid var(--line);
+  padding:24px 0;
+}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:var(--line-2)}
+.sidebar-logo{padding:0 20px 24px;border-bottom:1px solid var(--line);margin-bottom:16px}
+.sidebar-logo .logo-text{font-size:18px;font-weight:900;letter-spacing:-0.5px}
+.sidebar-logo .logo-text span{color:var(--brand)}
+.sidebar-logo .logo-sub{font-size:11px;color:var(--ink-3);margin-top:2px}
+.nav-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-3);padding:12px 20px 4px}
+.nav-link{display:flex;align-items:center;gap:8px;padding:7px 20px;font-size:13px;color:var(--ink-2);text-decoration:none;border-left:2px solid transparent;transition:all .15s;cursor:pointer}
+.nav-link:hover{color:var(--ink);background:var(--bg-2)}
+.nav-link.active{color:var(--brand);background:var(--brand-light);border-left-color:var(--brand);font-weight:500}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--line-2);flex-shrink:0}
+.nav-link.active .nav-dot{background:var(--brand)}
+
+.main{flex:1;overflow-x:hidden}
+
+/* ── Cover ──────────────────────────────────────────── */
+.cover{
+  background:var(--ink);
+  color:var(--white);
+  padding:80px 48px 72px;
+  position:relative;
+  overflow:hidden;
+}
+.cover::before{
+  content:'🐾';
+  position:absolute;right:48px;top:50%;transform:translateY(-50%);
+  font-size:180px;opacity:.06;line-height:1;
+  pointer-events:none;
+}
+.cover-eyebrow{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.75);margin-bottom:20px}
+.cover-title{font-size:clamp(32px,5vw,52px);font-weight:900;line-height:1.15;margin-bottom:12px;letter-spacing:-0.03em}
+.cover-title span{color:var(--brand)}
+.cover-sub{font-size:15px;color:rgba(255,255,255,.6);max-width:560px;line-height:1.7;margin-bottom:32px}
+.cover-meta{display:flex;gap:24px;flex-wrap:wrap}
+.cover-meta-item{font-size:12px;color:rgba(255,255,255,.45)}
+.cover-meta-item strong{color:rgba(255,255,255,.85);display:block;font-size:13px;margin-bottom:1px}
+.cover-tags{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap}
+.cover-tag{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:4px 12px;font-size:12px;color:rgba(255,255,255,.6)}
+
+/* ── Section Titles ─────────────────────────────────── */
+.sec-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--brand);margin-bottom:8px}
+.sec-title{font-size:clamp(20px,2.5vw,26px);font-weight:800;margin-bottom:10px;letter-spacing:-0.02em}
+.sec-desc{color:var(--ink-2);max-width:640px;font-size:14px;line-height:1.8;margin-bottom:40px}
+
+/* ── Cards ──────────────────────────────────────────── */
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;box-shadow:var(--shadow)}
+.card-sm{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+
+/* ── Grid ───────────────────────────────────────────── */
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:900px){.grid-3,.grid-4{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
+@media(max-width:640px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+/* ── Badges ─────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500}
+.badge-brand{background:#FFF0EC;color:#B83D24}
+.badge-green{background:#E1F5EE;color:#0F6E56}
+.badge-blue{background:#E6F1FB;color:#185FA5}
+.badge-amber{background:#FAEEDA;color:#854F0B}
+.badge-gray{background:var(--bg-2);color:var(--ink-3)}
+.badge-ink{background:var(--bg-3);color:var(--ink-2)}
+
+/* ── Pills / Tags ───────────────────────────────────── */
+.tag{display:inline-block;padding:3px 10px;background:var(--bg-2);border-radius:20px;font-size:12px;color:var(--ink-2);border:1px solid var(--line)}
+
+/* ── Overview boxes ─────────────────────────────────── */
+.overview-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+@media(max-width:800px){.overview-grid{grid-template-columns:1fr 1fr}}
+.ov-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;text-align:center}
+.ov-icon{font-size:28px;margin-bottom:10px;display:block}
+.ov-num{font-size:26px;font-weight:800;color:var(--brand);letter-spacing:-0.03em;line-height:1}
+.ov-lbl{font-size:12px;color:var(--ink-3);margin-top:4px}
+
+/* ── Feature card ───────────────────────────────────── */
+.feat-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r-lg);padding:24px;display:flex;flex-direction:column;gap:12px}
+.feat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.feat-icon-brand{background:var(--brand-light)}
+.feat-icon-green{background:#E1F5EE}
+.feat-icon-blue{background:#E6F1FB}
+.feat-icon-amber{background:#FAEEDA}
+.feat-title{font-size:15px;font-weight:700;color:var(--ink)}
+.feat-desc{font-size:13px;color:var(--ink-2);line-height:1.7}
+
+/* ── Phone Mockup ───────────────────────────────────── */
+.phone-wrap{display:flex;gap:24px;overflow-x:auto;padding-bottom:8px}
+.phone-wrap::-webkit-scrollbar{height:4px}
+.phone-wrap::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:2px}
+.phone-frame{flex-shrink:0;width:280px;background:var(--white);border-radius:28px;border:1.5px solid var(--line);overflow:hidden;box-shadow:var(--shadow-lg)}
+.phone-screen{font-size:12px}
+.phone-label{text-align:center;font-size:11px;color:var(--ink-3);margin-top:10px;font-weight:500}
+
+/* ── Form mockup ────────────────────────────────────── */
+.form-group{margin-bottom:18px}
+.form-label{font-size:12px;font-weight:500;color:var(--ink-2);margin-bottom:6px;display:block}
+.form-label .req{color:var(--brand);margin-left:2px}
+.form-input{width:100%;padding:9px 12px;border:1px solid var(--line-2);border-radius:8px;font-size:13px;color:var(--ink);background:var(--white);outline:none;font-family:inherit}
+.form-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(232,89,60,.1)}
+.form-input.mock{background:var(--bg-2);color:var(--ink-2)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A8580' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.form-hint{font-size:11px;color:var(--ink-3);margin-top:4px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.upload-zone{border:1.5px dashed var(--line-2);border-radius:10px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .15s}
+.upload-zone:hover{border-color:var(--brand);background:var(--brand-light)}
+.upload-zone-icon{font-size:28px;margin-bottom:8px}
+.upload-zone-text{font-size:13px;color:var(--ink-2)}
+.upload-zone-hint{font-size:11px;color:var(--ink-3);margin-top:3px}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:8px}
+.checkbox-item{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line-2);border-radius:8px;cursor:pointer;font-size:12px;color:var(--ink-2);transition:all .15s}
+.checkbox-item.selected{border-color:var(--brand);background:var(--brand-light);color:var(--brand-dark)}
+.step-bar{display:flex;align-items:center;margin-bottom:28px}
+.step{display:flex;align-items:center;gap:8px;font-size:12px}
+.step-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.step-num-active{background:var(--brand);color:#fff}
+.step-num-done{background:#E1F5EE;color:var(--success)}
+.step-num-todo{background:var(--bg-2);color:var(--ink-3)}
+.step-label-active{color:var(--ink);font-weight:500}
+.step-label-todo{color:var(--ink-3)}
+.step-line{flex:1;height:1px;background:var(--line);margin:0 8px}
+
+/* ── Flow diagram ───────────────────────────────────── */
+.flow{display:flex;align-items:center;gap:0;flex-wrap:wrap;row-gap:12px}
+.flow-node{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap}
+.flow-node-brand{background:var(--brand);color:#fff;border-color:var(--brand)}
+.flow-node-green{background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB}
+.flow-node-amber{background:#FAEEDA;color:#854F0B;border-color:#FAC775}
+.flow-node-blue{background:#E6F1FB;color:#185FA5;border-color:#B5D4F4}
+.flow-node-gray{background:var(--bg-2);color:var(--ink-3);border-color:var(--line)}
+.flow-arrow{padding:0 6px;color:var(--ink-3);font-size:14px;flex-shrink:0}
+
+/* ── Status badges ──────────────────────────────────── */
+.status-flow{display:flex;gap:0;align-items:stretch;flex-wrap:wrap;margin:20px 0}
+.status-item{flex:1;min-width:100px;padding:14px 12px;text-align:center;border:1px solid var(--line);margin-right:-1px;position:relative}
+.status-item:first-child{border-radius:8px 0 0 8px}
+.status-item:last-child{border-radius:0 8px 8px 0;margin-right:0}
+.status-icon{font-size:16px;display:block;margin-bottom:4px}
+.status-name{font-size:12px;font-weight:600}
+.status-desc{font-size:10px;color:var(--ink-3);margin-top:2px;line-height:1.4}
+.status-0{background:#F4F2EE;color:var(--ink-2)}
+.status-1{background:#FAEEDA;color:#854F0B;border-color:#FAC775}
+.status-2{background:#E6F1FB;color:#185FA5;border-color:#B5D4F4}
+.status-3{background:#E1F5EE;color:#0F6E56;border-color:#9FE1CB}
+.status-4{background:var(--bg-2);color:var(--ink-3)}
+
+/* ── Info table ─────────────────────────────────────── */
+.info-table{width:100%;border-collapse:collapse;font-size:13px}
+.info-table th{text-align:left;padding:10px 14px;background:var(--bg-2);font-weight:500;color:var(--ink-2);font-size:12px;border-bottom:1px solid var(--line)}
+.info-table td{padding:10px 14px;border-bottom:1px solid var(--line);color:var(--ink-2);vertical-align:top}
+.info-table tr:last-child td{border-bottom:none}
+.info-table tr:hover td{background:var(--bg-2)}
+
+/* ── Permission matrix ──────────────────────────────── */
+.perm-yes{color:var(--success);font-weight:500}
+.perm-no{color:var(--line-2)}
+.perm-part{color:var(--warn)}
+
+/* ── Highlight quote ────────────────────────────────── */
+.callout{border-left:3px solid var(--brand);background:var(--brand-light);padding:16px 20px;border-radius:0 8px 8px 0;margin:20px 0}
+.callout p{color:var(--ink-2);font-size:13px;margin:0}
+.callout-title{font-size:12px;font-weight:700;color:var(--brand-dark);margin-bottom:4px}
+
+/* ── Color swatch ───────────────────────────────────── */
+.color-palette{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.swatch{border-radius:10px;overflow:hidden;border:1px solid var(--line);width:120px}
+.swatch-color{height:56px}
+.swatch-info{padding:8px 10px;background:var(--white)}
+.swatch-name{font-size:12px;font-weight:500;color:var(--ink)}
+.swatch-hex{font-size:11px;color:var(--ink-3);margin-top:1px}
+
+/* ── Sprint timeline ────────────────────────────────── */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:7px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.tl-item{position:relative;margin-bottom:28px}
+.tl-dot{position:absolute;left:-28px;top:4px;width:16px;height:16px;border-radius:50%;border:2px solid var(--line);background:var(--white);display:flex;align-items:center;justify-content:center}
+.tl-dot-active{border-color:var(--brand);background:var(--brand)}
+.tl-dot-done{border-color:var(--success);background:var(--success)}
+.tl-phase{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-3);margin-bottom:4px}
+.tl-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.tl-tags{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ── Scroll progress ────────────────────────────────── */
+.progress-bar{position:fixed;top:0;left:0;height:2px;background:var(--brand);z-index:999;transition:width .1s}
+
+/* ── Print ──────────────────────────────────────────── */
+@media print{
+  .sidebar,.progress-bar{display:none}
+  .main{margin:0;padding:0}
+  .cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ── Animations ─────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .5s ease both}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="layout">
+<!-- ════════════════════ SIDEBAR ════════════════════ -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">毛毛<span>家</span></div>
+    <div class="logo-sub">产品设计文档 v1.0</div>
+  </div>
+
+  <div class="nav-section-label">概览</div>
+  <a class="nav-link active" onclick="scrollTo('cover')"><div class="nav-dot"></div>文档封面</a>
+  <a class="nav-link" onclick="scrollTo('overview')"><div class="nav-dot"></div>产品定位</a>
+  <a class="nav-link" onclick="scrollTo('roles')"><div class="nav-dot"></div>用户角色</a>
+
+  <div class="nav-section-label">核心功能</div>
+  <a class="nav-link" onclick="scrollTo('page-home')"><div class="nav-dot"></div>首页发现</a>
+  <a class="nav-link" onclick="scrollTo('page-detail')"><div class="nav-dot"></div>宠物详情</a>
+  <a class="nav-link" onclick="scrollTo('page-publish')"><div class="nav-dot"></div>发布宠物</a>
+  <a class="nav-link" onclick="scrollTo('page-adopt')"><div class="nav-dot"></div>领养申请</a>
+  <a class="nav-link" onclick="scrollTo('page-chat')"><div class="nav-dot"></div>消息聊天</a>
+  <a class="nav-link" onclick="scrollTo('page-profile')"><div class="nav-dot"></div>个人主页</a>
+
+  <div class="nav-section-label">业务逻辑</div>
+  <a class="nav-link" onclick="scrollTo('status-flow')"><div class="nav-dot"></div>宠物状态机</a>
+  <a class="nav-link" onclick="scrollTo('permissions')"><div class="nav-dot"></div>权限矩阵</a>
+  <a class="nav-link" onclick="scrollTo('data-model')"><div class="nav-dot"></div>数据模型</a>
+
+  <div class="nav-section-label">设计系统</div>
+  <a class="nav-link" onclick="scrollTo('design-system')"><div class="nav-dot"></div>颜色与字体</a>
+  <a class="nav-link" onclick="scrollTo('components')"><div class="nav-dot"></div>组件规范</a>
+
+  <div class="nav-section-label">交付计划</div>
+  <a class="nav-link" onclick="scrollTo('roadmap')"><div class="nav-dot"></div>迭代路线</a>
+  <a class="nav-link" onclick="scrollTo('tech')"><div class="nav-dot"></div>技术选型</a>
+</nav>
+
+<!-- ════════════════════ MAIN ════════════════════════ -->
+<main class="main">
+
+<!-- ── COVER ─────────────────────────────────────────── -->
+<section class="cover" id="cover">
+  <div class="cover-eyebrow">🐾 产品设计文档</div>
+  <div class="cover-title">毛毛<span>家</span><br>宠物领养平台</div>
+  <div class="cover-sub">一款连接领养者与流浪宠物救助者的移动优先平台，通过结构化信息、即时沟通与标准化流程，让每一次领养都更可信、更温暖。</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><strong>文档版本</strong>v1.0</div>
+    <div class="cover-meta-item"><strong>状态</strong>设计阶段</div>
+    <div class="cover-meta-item"><strong>平台</strong>iOS · Android · H5</div>
+    <div class="cover-meta-item"><strong>更新日期</strong>2026-03-15</div>
+  </div>
+  <div class="cover-tags">
+    <span class="cover-tag">移动应用</span>
+    <span class="cover-tag">社交平台</span>
+    <span class="cover-tag">公益领养</span>
+    <span class="cover-tag">IM消息</span>
+    <span class="cover-tag">UGC内容</span>
+  </div>
+</section>
+
+<!-- ── PRODUCT OVERVIEW ───────────────────────────────── -->
+<section class="section" id="overview">
+<div class="container">
+  <div class="sec-eyebrow">产品定位</div>
+  <h2 class="sec-title">为什么做毛毛家？</h2>
+  <p class="sec-desc">中国每年有数百万只流浪动物被救助机构收留，但由于信息不对称、沟通效率低、领养流程不规范，大量宠物长期无法找到合适的家。毛毛家旨在用互联网手段解决这一问题。</p>
+
+  <div class="overview-grid">
+    <div class="ov-card">
+      <span class="ov-icon">🐾</span>
+      <div class="ov-num">2,341</div>
+      <div class="ov-lbl">平台待领养宠物</div>
+    </div>
+    <div class="ov-card">
+      <span class="ov-icon">🏠</span>
+      <div class="ov-num">18k+</div>
+      <div class="ov-lbl">累计成功领养</div>
+    </div>
+    <div class="ov-card">
+      <span class="ov-icon">🏢</span>
+      <div class="ov-num">437</div>
+      <div class="ov-lbl">认证救助机构</div>
+    </div>
+    <div class="ov-card">
+      <span class="ov-icon">⭐</span>
+      <div class="ov-num">4.8</div>
+      <div class="ov-lbl">用户平均评分</div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div style="font-size:24px;margin-bottom:12px">🔍</div>
+      <h3 style="margin-bottom:8px">核心场景一<br>寻找宠物</h3>
+      <p style="font-size:13px">用户通过筛选（品种、年龄、城市、性别）发现合适的宠物，查看健康档案、性格描述，一键发起领养申请或联系发布者。</p>
+    </div>
+    <div class="card">
+      <div style="font-size:24px;margin-bottom:12px">📤</div>
+      <h3 style="margin-bottom:8px">核心场景二<br>发布宠物</h3>
+      <p style="font-size:13px">个人用户或救助机构上传宠物信息、照片、健康档案，发布后可管理申请者列表，选择合适的领养人并确认交接。</p>
+    </div>
+    <div class="card">
+      <div style="font-size:24px;margin-bottom:12px">💬</div>
+      <h3 style="margin-bottom:8px">核心场景三<br>沟通协商</h3>
+      <p style="font-size:13px">双方在站内消息中进行深度沟通，共享宠物信息卡片，确认领养条件，最终线下完成交接并互相评价。</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── USER ROLES ─────────────────────────────────────── -->
+<section class="section" id="roles">
+<div class="container">
+  <div class="sec-eyebrow">用户角色</div>
+  <h2 class="sec-title">三类核心用户</h2>
+  <p class="sec-desc">平台围绕三类用户设计差异化的功能权限，确保体验对路、安全可信。</p>
+
+  <div class="grid-3" style="margin-bottom:32px">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="width:48px;height:48px;border-radius:14px;background:#FFF0EC;display:flex;align-items:center;justify-content:center;font-size:22px">👤</div>
+        <div>
+          <div style="font-weight:700;font-size:15px">普通用户</div>
+          <div class="badge badge-gray" style="margin-top:3px">未认证</div>
+        </div>
+      </div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+        <li style="font-size:13px;color:var(--ink-2)">✅ 浏览搜索所有宠物</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 发布个人待领养宠物（每月最多5只）</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 提交领养申请</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 使用站内消息</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 收藏 / 关注宠物</li>
+        <li style="font-size:13px;color:var(--ink-3)">❌ 无法批量上传</li>
+        <li style="font-size:13px;color:var(--ink-3)">❌ 无优先展示位</li>
+      </ul>
+    </div>
+    <div class="card" style="border-color:var(--brand);border-width:1.5px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="width:48px;height:48px;border-radius:14px;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:22px">🏢</div>
+        <div>
+          <div style="font-weight:700;font-size:15px">认证救助机构</div>
+          <div class="badge badge-green" style="margin-top:3px">✓ 认证</div>
+        </div>
+      </div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+        <li style="font-size:13px;color:var(--ink-2)">✅ 普通用户所有权限</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 无限量批量发布宠物</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 首页优先推荐展示</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 查看详细数据报表</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 机构主页 + 认证徽章</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 批量管理申请人</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="width:48px;height:48px;border-radius:14px;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:22px">🛡</div>
+        <div>
+          <div style="font-weight:700;font-size:15px">平台管理员</div>
+          <div class="badge badge-blue" style="margin-top:3px">Admin</div>
+        </div>
+      </div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+        <li style="font-size:13px;color:var(--ink-2)">✅ 内容审核（宠物信息）</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 处理用户举报</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 机构资质认证审批</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 平台数据看板</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 禁封违规账号</li>
+        <li style="font-size:13px;color:var(--ink-2)">✅ 配置首页推荐规则</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     PAGE SPECS
+══════════════════════════════════════════════════════ -->
+
+<!-- ── PAGE: HOME ─────────────────────────────────────── -->
+<section class="section" id="page-home">
+<div class="container">
+  <div class="sec-eyebrow">页面设计 01</div>
+  <h2 class="sec-title">首页 · 发现</h2>
+  <p class="sec-desc">首页是用户打开App的第一个触点，目标是让用户在3秒内找到感兴趣的宠物或执行关键操作。</p>
+
+  <div class="grid-2" style="margin-bottom:32px">
+    <div>
+      <h4 style="margin-bottom:16px">页面结构</h4>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;background:var(--bg-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🔔</div>
+          <div><div style="font-size:13px;font-weight:500">顶部导航栏</div><div style="font-size:11px;color:var(--ink-3)">Logo + 通知铃 + 头像入口</div></div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;background:var(--bg-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🔍</div>
+          <div><div style="font-size:13px;font-weight:500">搜索栏</div><div style="font-size:11px;color:var(--ink-3)">支持品种名、城市、关键词</div></div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;background:var(--bg-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🏷</div>
+          <div><div style="font-size:13px;font-weight:500">快捷筛选Chip</div><div style="font-size:11px;color:var(--ink-3)">全部、狗、猫、兔、仓鼠、鸟、鱼</div></div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;background:var(--brand-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🎉</div>
+          <div><div style="font-size:13px;font-weight:500">公益活动 Banner</div><div style="font-size:11px;color:var(--ink-3)">运营位，支持配置，可跳转专题页</div></div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;background:var(--bg-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📊</div>
+          <div><div style="font-size:13px;font-weight:500">数字统计行</div><div style="font-size:11px;color:var(--ink-3)">待领养数 / 成功领养数 / 机构数</div></div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;background:var(--bg-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">🐾</div>
+          <div><div style="font-size:13px;font-weight:500">宠物卡片瀑布流</div><div style="font-size:11px;color:var(--ink-3)">2列网格，无限滚动加载，含空位「发布」卡</div></div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px">
+          <div style="width:32px;height:32px;background:var(--bg-2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">⊕</div>
+          <div><div style="font-size:13px;font-weight:500">底部Tab导航</div><div style="font-size:11px;color:var(--ink-3)">首页 / 探索 / 发布(突出) / 消息 / 我的</div></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4 style="margin-bottom:16px">宠物卡片字段</h4>
+      <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+        <thead><tr><th>字段</th><th>说明</th><th>必填</th></tr></thead>
+        <tbody>
+          <tr><td>封面图</td><td>最多9张，第一张为封面，支持视频</td><td><span class="badge badge-brand">必填</span></td></tr>
+          <tr><td>宠物名</td><td>自定义名称，最长10字</td><td><span class="badge badge-brand">必填</span></td></tr>
+          <tr><td>品种</td><td>从预设分类树选择，支持「混种/未知」</td><td><span class="badge badge-brand">必填</span></td></tr>
+          <tr><td>年龄</td><td>月/年，可选「估计X岁左右」</td><td><span class="badge badge-brand">必填</span></td></tr>
+          <tr><td>性别</td><td>男 / 女 / 未知</td><td><span class="badge badge-brand">必填</span></td></tr>
+          <tr><td>所在城市</td><td>省市区（自动定位 or 手动选择）</td><td><span class="badge badge-brand">必填</span></td></tr>
+          <tr><td>健康状态</td><td>已接种 / 已绝育 / 已驱虫 多选</td><td><span class="badge badge-gray">选填</span></td></tr>
+          <tr><td>性格标签</td><td>温顺、活泼、亲人、独立等，多选最多5个</td><td><span class="badge badge-gray">选填</span></td></tr>
+          <tr><td>领养要求</td><td>发布者设置的条件，如「有固定住所」</td><td><span class="badge badge-gray">选填</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout" style="margin-top:20px">
+        <div class="callout-title">推荐算法说明</div>
+        <p>首页宠物列表按以下权重排序：① 用户历史浏览品种偏好（35%）② 地理距离（25%）③ 发布时间新鲜度（20%）④ 帖子互动率（20%）。认证机构内容在同等权重下享有1.2倍加权。</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── PAGE: PET DETAIL ────────────────────────────────── -->
+<section class="section" id="page-detail">
+<div class="container">
+  <div class="sec-eyebrow">页面设计 02</div>
+  <h2 class="sec-title">宠物详情页</h2>
+  <p class="sec-desc">详情页是领养决策的核心触点，需要在有限屏幕内传达充分的信息以建立信任，并提供清晰的行动路径。</p>
+
+  <div class="grid-2">
+    <div>
+      <h4 style="margin-bottom:16px">页面模块（从上到下）</h4>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="background:var(--bg-2);border-radius:8px 8px 0 0;padding:12px 14px;font-size:13px;border:1px solid var(--line)">
+          <strong>① 图片/视频轮播</strong> — 全屏宽度，支持放大，覆盖分享、收藏按钮
+        </div>
+        <div style="background:var(--white);padding:12px 14px;font-size:13px;border:1px solid var(--line);border-top:none">
+          <strong>② 基本信息区</strong> — 名字 + 收藏、品种/年龄/性别/城市 Chip、当前状态 Badge
+        </div>
+        <div style="background:var(--white);padding:12px 14px;font-size:13px;border:1px solid var(--line);border-top:none">
+          <strong>③ 健康档案卡</strong> — 接种/绝育/驱虫三格宫，高亮已完成项
+        </div>
+        <div style="background:var(--white);padding:12px 14px;font-size:13px;border:1px solid var(--line);border-top:none">
+          <strong>④ 性格描述</strong> — 标签 + 自由文本描述（最多500字）
+        </div>
+        <div style="background:var(--white);padding:12px 14px;font-size:13px;border:1px solid var(--line);border-top:none">
+          <strong>⑤ 领养要求</strong> — 发布者设置的条件列表，不满足条件申请将弹提示
+        </div>
+        <div style="background:var(--white);padding:12px 14px;font-size:13px;border:1px solid var(--line);border-top:none">
+          <strong>⑥ 发布者信息卡</strong> — 头像 + 名称 + 发布数 + 评分，点击进主页
+        </div>
+        <div style="background:var(--bg-2);border-radius:0 0 8px 8px;padding:12px 14px;font-size:13px;border:1px solid var(--line);border-top:none">
+          <strong>⑦ 底部操作栏（固定）</strong> — 「💬 联系发布者」+ 「提交领养申请」
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4 style="margin-bottom:16px">状态影响的交互变化</h4>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card-sm">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-green">待领养</span>
+            <span style="font-size:12px;color:var(--ink-2)">正常状态</span>
+          </div>
+          <p style="font-size:12px;color:var(--ink-2)">两个按钮均可用，可正常提交申请</p>
+        </div>
+        <div class="card-sm">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-amber">申请中</span>
+            <span style="font-size:12px;color:var(--ink-2)">有人申请中</span>
+          </div>
+          <p style="font-size:12px;color:var(--ink-2)">「申请」按钮显示「排队等待」，仍可联系发布者</p>
+        </div>
+        <div class="card-sm">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-blue">审核中</span>
+            <span style="font-size:12px;color:var(--ink-2)">进入审核</span>
+          </div>
+          <p style="font-size:12px;color:var(--ink-2)">两个按钮均禁用，提示「该宠物正在交接中」</p>
+        </div>
+        <div class="card-sm">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span class="badge badge-gray">已领养</span>
+            <span style="font-size:12px;color:var(--ink-2)">完成领养</span>
+          </div>
+          <p style="font-size:12px;color:var(--ink-2)">页面显示「领养成功」横幅，按钮区域变为「查看相似宠物」</p>
+        </div>
+      </div>
+      <div class="callout" style="margin-top:16px">
+        <div class="callout-title">防骚扰机制</div>
+        <p>同一用户每日最多可发起5次「联系发布者」操作，超限后提示「今日消息上限已达到，明天再来吧」，防止恶意打扰。</p>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── PAGE: PUBLISH ───────────────────────────────────── -->
+<section class="section" id="page-publish">
+<div class="container">
+  <div class="sec-eyebrow">页面设计 03</div>
+  <h2 class="sec-title">发布宠物</h2>
+  <p class="sec-desc">分步骤表单，降低用户发布门槛，同时通过结构化数据收集提升信息质量。共分4步，平均填写时间约3分钟。</p>
+
+  <div class="step-bar" style="margin-bottom:32px">
+    <div class="step">
+      <div class="step-num step-num-active">1</div>
+      <span class="step-label-active" style="font-size:13px">基本信息</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-num step-num-active">2</div>
+      <span class="step-label-active" style="font-size:13px">健康档案</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-num step-num-todo">3</div>
+      <span class="step-label-todo" style="font-size:13px">领养要求</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step">
+      <div class="step-num step-num-todo">4</div>
+      <span class="step-label-todo" style="font-size:13px">确认发布</span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Step 1 -->
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:16px">第一步 · 基本信息</div>
+      <div class="card" style="padding:20px">
+        <div class="form-group">
+          <label class="form-label">宠物照片/视频 <span class="req">*</span></label>
+          <div class="upload-zone">
+            <div class="upload-zone-icon">📷</div>
+            <div class="upload-zone-text">点击上传照片或视频</div>
+            <div class="upload-zone-hint">最多9张图片，支持MP4视频，单文件≤50MB</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">宠物名字 <span class="req">*</span></label>
+            <input class="form-input mock" value="小橘" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">动物类型 <span class="req">*</span></label>
+            <select class="form-input form-select mock"><option>🐱 猫咪</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">品种 <span class="req">*</span></label>
+            <select class="form-input form-select mock"><option>橘猫</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">性别 <span class="req">*</span></label>
+            <select class="form-input form-select mock"><option>女生</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">年龄 <span class="req">*</span></label>
+            <input class="form-input mock" value="1岁" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">所在城市 <span class="req">*</span></label>
+            <input class="form-input mock" value="上海市徐汇区" readonly>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">性格描述</label>
+          <textarea class="form-input form-textarea mock" readonly>小橘是只温柔亲人的橘猫，喜欢被抱抱...</textarea>
+          <div class="form-hint">描述越详细，领养成功率越高。0/500字</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">性格标签 （最多选5个）</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item selected">温顺</div>
+            <div class="checkbox-item selected">亲人</div>
+            <div class="checkbox-item">活泼</div>
+            <div class="checkbox-item">独立</div>
+            <div class="checkbox-item">粘人</div>
+            <div class="checkbox-item">安静</div>
+            <div class="checkbox-item">怕生</div>
+            <div class="checkbox-item selected">对孩子友好</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:16px">第二步 · 健康档案</div>
+      <div class="card" style="padding:20px;margin-bottom:16px">
+        <div class="form-group">
+          <label class="form-label">健康状态（多选）</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item selected">💉 已接种疫苗</div>
+            <div class="checkbox-item selected">✂️ 已绝育</div>
+            <div class="checkbox-item selected">🧪 已体内驱虫</div>
+            <div class="checkbox-item">🧴 已体外驱虫</div>
+            <div class="checkbox-item">🦷 洗牙</div>
+            <div class="checkbox-item">🏥 有就诊记录</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">疫苗接种时间</label>
+          <input class="form-input mock" value="2024年12月" readonly>
+          <div class="form-hint">若记不清请填写「约X年前」</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">已知病史 / 特殊情况</label>
+          <textarea class="form-input form-textarea mock" style="min-height:60px" readonly>无已知疾病，眼睛偶有分泌物属正常现象。</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">上传健康证明（选填）</label>
+          <div class="upload-zone" style="padding:16px">
+            <div class="upload-zone-icon" style="font-size:20px">📄</div>
+            <div class="upload-zone-text" style="font-size:12px">上传疫苗本、检查报告等</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:12px">第三步 · 领养要求</div>
+      <div class="card" style="padding:20px">
+        <div class="form-group">
+          <label class="form-label">硬性要求（不符合无法申请）</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item selected">有固定住所</div>
+            <div class="checkbox-item">不能养在出租屋</div>
+            <div class="checkbox-item selected">领养不转卖</div>
+            <div class="checkbox-item">有养宠经验</div>
+            <div class="checkbox-item">家庭成员同意</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">补充说明</label>
+          <textarea class="form-input form-textarea mock" style="min-height:56px" readonly>希望领养者能提供偶尔回访照片，让我知道小橘过得好 🥰</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">是否接受上门拜访</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item selected">接受交接前上门看猫</div>
+            <div class="checkbox-item">接受领养后回访</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:24px">
+    <div class="callout-title">内容审核机制</div>
+    <p>发布后进入<strong>人工+AI双重审核</strong>队列，审核内容包括：图片是否真实（检测AI生成图）、健康描述是否明显虚假、是否存在交易性质文字（禁止收取费用）。通常在 <strong>2小时内</strong> 完成审核，审核结果通过站内通知告知。</p>
+  </div>
+</div>
+</section>
+
+<!-- ── PAGE: ADOPT FORM ────────────────────────────────── -->
+<section class="section" id="page-adopt">
+<div class="container">
+  <div class="sec-eyebrow">页面设计 04</div>
+  <h2 class="sec-title">领养申请表单</h2>
+  <p class="sec-desc">领养申请是平台最关键的转化步骤，表单设计目标是在筛选出真实有意向的领养人的同时，降低填写负担。</p>
+
+  <div class="grid-2">
+    <div>
+      <h4 style="margin-bottom:16px">申请表结构</h4>
+      <div class="card" style="padding:20px">
+        <!-- Header -->
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-2);border-radius:8px;margin-bottom:20px">
+          <div style="font-size:32px">🐱</div>
+          <div>
+            <div style="font-size:13px;font-weight:700">我要领养：小橘</div>
+            <div style="font-size:11px;color:var(--ink-3)">橘猫 · 1岁 · 女 · 上海</div>
+          </div>
+          <div class="badge badge-green" style="margin-left:auto">待领养</div>
+        </div>
+
+        <div class="step-bar" style="margin-bottom:20px">
+          <div class="step"><div class="step-num step-num-active">1</div><span style="font-size:12px">个人信息</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num step-num-todo">2</div><span style="font-size:12px;color:var(--ink-3)">生活情况</span></div>
+          <div class="step-line"></div>
+          <div class="step"><div class="step-num step-num-todo">3</div><span style="font-size:12px;color:var(--ink-3)">承诺确认</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">真实姓名 <span class="req">*</span></label>
+          <input class="form-input mock" value="陈思远" readonly>
+          <div class="form-hint">仅发布者可见，用于双方建立信任</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">联系电话 <span class="req">*</span></label>
+          <input class="form-input mock" value="138****5678" readonly>
+          <div class="form-hint">平台加密存储，仅用于紧急联系</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">年龄 <span class="req">*</span></label>
+            <select class="form-input form-select mock"><option>28岁</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">职业</label>
+            <select class="form-input form-select mock"><option>互联网从业者</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">居住情况 <span class="req">*</span></label>
+          <div class="checkbox-group">
+            <div class="checkbox-item selected">自有房产</div>
+            <div class="checkbox-item">租房（允许养宠）</div>
+            <div class="checkbox-item">与家人同住</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">居住城市 <span class="req">*</span></label>
+          <input class="form-input mock" value="上海市浦东新区" readonly>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:16px">生活情况 & 承诺确认</h4>
+      <div class="card" style="padding:20px;margin-bottom:16px">
+        <div class="form-group">
+          <label class="form-label">家庭成员情况</label>
+          <div class="checkbox-group">
+            <div class="checkbox-item selected">独居</div>
+            <div class="checkbox-item">与伴侣同住</div>
+            <div class="checkbox-item">有孩子</div>
+            <div class="checkbox-item">有老人</div>
+            <div class="checkbox-item">有其他宠物</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">日常在家时长</label>
+          <select class="form-input form-select mock"><option>居家办公，几乎全天在家</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">养宠经历</label>
+          <textarea class="form-input form-textarea mock" style="min-height:64px" readonly>之前养过两年英短，熟悉猫咪日常护理和饮食，知道如何应对常见疾病。</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">领养动机 <span class="req">*</span></label>
+          <textarea class="form-input form-textarea mock" style="min-height:64px" readonly>一个人住想要陪伴，也想给流浪猫一个温暖的家，已准备好猫粮、猫砂盆等物品。</textarea>
+          <div class="form-hint">真实的动机更容易得到发布者的信任。0/300字</div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px">📋 承诺事项（请仔细阅读）</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink-2)">
+            <span style="color:var(--success);flex-shrink:0;margin-top:1px">✓</span>领养宠物用于家庭伴侣，不用于繁殖或转售
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink-2)">
+            <span style="color:var(--success);flex-shrink:0;margin-top:1px">✓</span>如无法继续饲养，优先联系原发布者或平台协助转领养
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink-2)">
+            <span style="color:var(--success);flex-shrink:0;margin-top:1px">✓</span>同意在领养后1个月内提供一次生活照片回访
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--ink-2)">
+            <span style="color:var(--success);flex-shrink:0;margin-top:1px">✓</span>如实填写以上所有信息，虚假信息将封禁账号
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px 16px;background:var(--brand);border-radius:8px;color:#fff;text-align:center;font-size:14px;font-weight:500;cursor:pointer">
+          提交领养申请 →
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── PAGE: CHAT ──────────────────────────────────────── -->
+<section class="section" id="page-chat">
+<div class="container">
+  <div class="sec-eyebrow">页面设计 05</div>
+  <h2 class="sec-title">消息 · 聊天</h2>
+  <p class="sec-desc">即时通讯是连接领养者和发布者的核心桥梁，设计重点是：上下文清晰、操作便捷、有防骚扰机制。</p>
+
+  <div class="grid-2" style="margin-bottom:32px">
+    <div>
+      <h4 style="margin-bottom:16px">消息列表页</h4>
+      <div class="card" style="padding:0;overflow:hidden">
+        <!-- Message list items -->
+        <div style="padding:14px 16px;border-bottom:1px solid var(--line);background:var(--brand-light)">
+          <div style="font-size:11px;font-weight:700;color:var(--brand-dark);margin-bottom:2px">📌 系统通知</div>
+          <div style="font-size:12px;color:var(--ink-2)">您的领养申请已被接受，请查看详情</div>
+          <div style="font-size:10px;color:var(--ink-3);margin-top:2px">2分钟前</div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;cursor:pointer">
+          <div style="width:40px;height:40px;border-radius:50%;background:#FFD5C8;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;position:relative">
+            😊
+            <div style="position:absolute;top:-2px;right:-2px;width:10px;height:10px;background:var(--brand);border-radius:50%;border:2px solid var(--white)"></div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:13px;font-weight:600">林小花</div>
+              <div style="font-size:10px;color:var(--ink-3)">10:38</div>
+            </div>
+            <div style="font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">关于【小橘】：养过两年英短，熟悉猫咪...</div>
+            <div style="font-size:10px;color:var(--ink-3);margin-top:2px">🐱 小橘 · 橘猫</div>
+          </div>
+        </div>
+        <div style="padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;cursor:pointer;opacity:0.7">
+          <div style="width:40px;height:40px;border-radius:50%;background:#E1F5EE;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🏢</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:13px;font-weight:500">上海流浪猫救助站 <span class="badge badge-green" style="font-size:9px;padding:1px 6px">认证</span></div>
+              <div style="font-size:10px;color:var(--ink-3)">昨天</div>
+            </div>
+            <div style="font-size:12px;color:var(--ink-3)">感谢您的关注，请问您方便本周末...</div>
+          </div>
+        </div>
+        <div style="padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;opacity:0.6">
+          <div style="width:40px;height:40px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">👩</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:13px;font-weight:500">王芳</div>
+              <div style="font-size:10px;color:var(--ink-3)">3天前</div>
+            </div>
+            <div style="font-size:12px;color:var(--ink-3)">您好，我想了解一下关于豆豆的...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:16px">聊天功能规格</h4>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="feat-card">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="feat-icon feat-icon-brand">💬</div>
+            <div class="feat-title">消息类型</div>
+          </div>
+          <div class="feat-desc">支持文字（最长2000字/条）、图片（最多9张）、宠物信息卡片（自动附带）、位置信息（选填，用于约线下交接）</div>
+        </div>
+        <div class="feat-card">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="feat-icon feat-icon-green">🛡</div>
+            <div class="feat-title">安全机制</div>
+          </div>
+          <div class="feat-desc">双方均未互相「确认领养」前，禁止发送手机号、微信号等联系方式（系统自动检测屏蔽）；双方确认后解除限制。</div>
+        </div>
+        <div class="feat-card">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="feat-icon feat-icon-blue">🔔</div>
+            <div class="feat-title">推送通知</div>
+          </div>
+          <div class="feat-desc">新消息、申请状态变更均推送通知。用户可设置免打扰时段（默认22:00 - 08:00）。</div>
+        </div>
+        <div class="feat-card">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="feat-icon feat-icon-amber">⚠️</div>
+            <div class="feat-title">举报机制</div>
+          </div>
+          <div class="feat-desc">长按消息可举报（骚扰、欺诈、虚假信息）。被举报3次的用户自动限制发消息权限并人工审核。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── PAGE: PROFILE ───────────────────────────────────── -->
+<section class="section" id="page-profile">
+<div class="container">
+  <div class="sec-eyebrow">页面设计 06</div>
+  <h2 class="sec-title">个人主页</h2>
+  <p class="sec-desc">个人主页既是用户管理自己发布内容的控制台，也是其他用户了解发布者可信度的信任背书页。</p>
+
+  <div class="grid-2">
+    <div>
+      <h4 style="margin-bottom:16px">主页模块</h4>
+      <div class="card" style="padding:0;overflow:hidden">
+        <!-- Profile header -->
+        <div style="padding:20px;background:linear-gradient(135deg,var(--bg-2),var(--bg-3))">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+            <div style="width:60px;height:60px;border-radius:50%;background:#FFD5C8;display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid var(--white)">😊</div>
+            <div>
+              <div style="font-size:16px;font-weight:700">林小花</div>
+              <div style="font-size:12px;color:var(--ink-3)">上海 · 加入于 2024年</div>
+              <div style="margin-top:4px"><span class="badge badge-green">✓ 手机已验证</span></div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;text-align:center">
+            <div><div style="font-size:18px;font-weight:700;color:var(--brand)">3</div><div style="font-size:11px;color:var(--ink-3)">发布宠物</div></div>
+            <div><div style="font-size:18px;font-weight:700;color:var(--brand)">2</div><div style="font-size:11px;color:var(--ink-3)">成功领养</div></div>
+            <div><div style="font-size:18px;font-weight:700;color:var(--brand)">4.9⭐</div><div style="font-size:11px;color:var(--ink-3)">评分</div></div>
+          </div>
+        </div>
+        <!-- Tabs -->
+        <div style="display:flex;border-bottom:1px solid var(--line)">
+          <div style="flex:1;text-align:center;padding:10px;font-size:12px;font-weight:500;color:var(--brand);border-bottom:2px solid var(--brand)">发布的宠物 (3)</div>
+          <div style="flex:1;text-align:center;padding:10px;font-size:12px;color:var(--ink-3);cursor:pointer">收到的评价 (8)</div>
+          <div style="flex:1;text-align:center;padding:10px;font-size:12px;color:var(--ink-3);cursor:pointer">我的收藏</div>
+        </div>
+        <!-- Pet mini cards -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line)">
+          <div style="background:var(--white);aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;cursor:pointer;position:relative">
+            <span style="font-size:32px">🐱</span>
+            <span style="font-size:10px;color:var(--ink-2)">小橘</span>
+            <div style="position:absolute;top:6px;right:6px;background:var(--success);border-radius:20px;padding:1px 5px;font-size:9px;color:#fff">待领养</div>
+          </div>
+          <div style="background:var(--white);aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;cursor:pointer;position:relative">
+            <span style="font-size:32px">🐶</span>
+            <span style="font-size:10px;color:var(--ink-2)">豆豆</span>
+            <div style="position:absolute;top:6px;right:6px;background:#B5D4F4;border-radius:20px;padding:1px 5px;font-size:9px;color:#185FA5">已领养</div>
+          </div>
+          <div style="background:var(--white);aspect-ratio:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;cursor:pointer;position:relative">
+            <span style="font-size:32px">🐰</span>
+            <span style="font-size:10px;color:var(--ink-2)">米粒</span>
+            <div style="position:absolute;top:6px;right:6px;background:var(--success);border-radius:20px;padding:1px 5px;font-size:9px;color:#fff">待领养</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4 style="margin-bottom:16px">「我的」管理中心（本人视角）</h4>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px;cursor:pointer">
+          <span style="font-size:18px">📋</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500">我的领养申请</div>
+            <div style="font-size:11px;color:var(--ink-3)">1个进行中 · 2个已完成</div>
+          </div>
+          <span class="badge badge-amber">1 进行中</span>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px;cursor:pointer">
+          <span style="font-size:18px">📨</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500">收到的领养申请</div>
+            <div style="font-size:11px;color:var(--ink-3)">待我审核的申请</div>
+          </div>
+          <span class="badge badge-brand">3 待处理</span>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px;cursor:pointer">
+          <span style="font-size:18px">❤️</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500">我的收藏</div>
+            <div style="font-size:11px;color:var(--ink-3)">12只收藏的宠物</div>
+          </div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px;cursor:pointer">
+          <span style="font-size:18px">⭐</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500">评价管理</div>
+            <div style="font-size:11px;color:var(--ink-3)">我的评分 4.9 · 共8条评价</div>
+          </div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px;cursor:pointer">
+          <span style="font-size:18px">🔔</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500">通知设置</div>
+            <div style="font-size:11px;color:var(--ink-3)">免打扰 · 推送偏好</div>
+          </div>
+        </div>
+        <div class="card-sm" style="display:flex;align-items:center;gap:12px;cursor:pointer">
+          <span style="font-size:18px">🛡</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:500">账号与安全</div>
+            <div style="font-size:11px;color:var(--ink-3)">手机、密码、实名认证</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── STATUS FLOW ─────────────────────────────────────── -->
+<section class="section" id="status-flow">
+<div class="container">
+  <div class="sec-eyebrow">业务逻辑</div>
+  <h2 class="sec-title">宠物状态机</h2>
+  <p class="sec-desc">每只宠物在平台内的生命周期由以下5个状态驱动，状态转换触发相应的通知和界面变化。</p>
+
+  <div class="status-flow">
+    <div class="status-item status-0"><span class="status-icon">📋</span><div class="status-name">草稿</div><div class="status-desc">填写中，未提交审核</div></div>
+    <div class="status-item status-1"><span class="status-icon">🔍</span><div class="status-name">审核中</div><div class="status-desc">已提交，等待平台审核</div></div>
+    <div class="status-item status-3"><span class="status-icon">🟢</span><div class="status-name">待领养</div><div class="status-desc">审核通过，公开展示</div></div>
+    <div class="status-item status-1"><span class="status-icon">📬</span><div class="status-name">申请中</div><div class="status-desc">有领养申请待处理</div></div>
+    <div class="status-item status-2"><span class="status-icon">🤝</span><div class="status-name">交接中</div><div class="status-desc">双方确认，等待交接</div></div>
+    <div class="status-item status-3"><span class="status-icon">🏠</span><div class="status-name">已领养</div><div class="status-desc">领养完成</div></div>
+    <div class="status-item status-4"><span class="status-icon">⛔</span><div class="status-name">已关闭</div><div class="status-desc">手动下架或违规</div></div>
+  </div>
+
+  <h4 style="margin:28px 0 16px">状态转换规则</h4>
+  <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+    <thead><tr><th>触发动作</th><th>当前状态</th><th>目标状态</th><th>触发者</th><th>通知对象</th></tr></thead>
+    <tbody>
+      <tr><td>提交发布</td><td><span class="badge badge-gray">草稿</span></td><td><span class="badge badge-amber">审核中</span></td><td>发布者</td><td>发布者（确认通知）</td></tr>
+      <tr><td>审核通过</td><td><span class="badge badge-amber">审核中</span></td><td><span class="badge badge-green">待领养</span></td><td>管理员/系统</td><td>发布者</td></tr>
+      <tr><td>审核拒绝</td><td><span class="badge badge-amber">审核中</span></td><td><span class="badge badge-gray">草稿</span></td><td>管理员</td><td>发布者（附拒绝原因）</td></tr>
+      <tr><td>有人提交申请</td><td><span class="badge badge-green">待领养</span></td><td><span class="badge badge-amber">申请中</span></td><td>申请者</td><td>发布者</td></tr>
+      <tr><td>发布者拒绝申请</td><td><span class="badge badge-amber">申请中</span></td><td><span class="badge badge-green">待领养</span></td><td>发布者</td><td>申请者</td></tr>
+      <tr><td>发布者接受申请</td><td><span class="badge badge-amber">申请中</span></td><td><span class="badge badge-blue">交接中</span></td><td>发布者</td><td>申请者</td></tr>
+      <tr><td>双方确认交接</td><td><span class="badge badge-blue">交接中</span></td><td><span class="badge badge-green">已领养</span></td><td>双方</td><td>双方（邀请互评）</td></tr>
+      <tr><td>手动下架</td><td>任意</td><td><span class="badge badge-gray">已关闭</span></td><td>发布者/管理员</td><td>有待处理申请的申请者</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+
+<!-- ── PERMISSIONS ─────────────────────────────────────── -->
+<section class="section" id="permissions">
+<div class="container">
+  <div class="sec-eyebrow">业务逻辑</div>
+  <h2 class="sec-title">权限矩阵</h2>
+  <p class="sec-desc">清晰定义三类用户在各功能模块上的操作权限，确保安全边界清晰。</p>
+
+  <div style="overflow-x:auto">
+  <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:600px">
+    <thead>
+      <tr>
+        <th style="min-width:180px">功能</th>
+        <th style="text-align:center">普通用户</th>
+        <th style="text-align:center">认证机构</th>
+        <th style="text-align:center">管理员</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td colspan="4" style="background:var(--bg-2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);padding:8px 14px">宠物管理</td></tr>
+      <tr><td>浏览搜索宠物</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-yes" style="text-align:center">✓</td></tr>
+      <tr><td>发布待领养宠物</td><td class="perm-part" style="text-align:center">每月≤5只</td><td class="perm-yes" style="text-align:center">不限量</td><td class="perm-yes" style="text-align:center">✓</td></tr>
+      <tr><td>编辑/下架自己的发布</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-yes" style="text-align:center">✓（所有）</td></tr>
+      <tr><td>批量导入宠物数据</td><td class="perm-no" style="text-align:center">—</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-yes" style="text-align:center">✓</td></tr>
+
+      <tr><td colspan="4" style="background:var(--bg-2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);padding:8px 14px">申请 & 沟通</td></tr>
+      <tr><td>提交领养申请</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-no" style="text-align:center">—</td></tr>
+      <tr><td>审核领养申请</td><td class="perm-yes" style="text-align:center">（自己的发布）</td><td class="perm-yes" style="text-align:center">（机构发布）</td><td class="perm-yes" style="text-align:center">所有</td></tr>
+      <tr><td>站内发消息</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-yes" style="text-align:center">✓</td><td class="perm-part" style="text-align:center">系统消息</td></tr>
+
+      <tr><td colspan="4" style="background:var(--bg-2);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);padding:8px 14px">平台管理</td></tr>
+      <tr><td>审核新发布内容</td><td class="perm-no" style="text-align:center">—</td><td class="perm-no" style="text-align:center">—</td><td class="perm-yes" style="text-align:center">✓</td></tr>
+      <tr><td>处理用户举报</td><td class="perm-no" style="text-align:center">—</td><td class="perm-no" style="text-align:center">—</td><td class="perm-yes" style="text-align:center">✓</td></tr>
+      <tr><td>机构认证审批</td><td class="perm-no" style="text-align:center">—</td><td class="perm-no" style="text-align:center">—</td><td class="perm-yes" style="text-align:center">✓</td></tr>
+      <tr><td>查看数据看板</td><td class="perm-no" style="text-align:center">—</td><td class="perm-part" style="text-align:center">机构数据</td><td class="perm-yes" style="text-align:center">全平台</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- ── DATA MODEL ──────────────────────────────────────── -->
+<section class="section" id="data-model">
+<div class="container">
+  <div class="sec-eyebrow">业务逻辑</div>
+  <h2 class="sec-title">核心数据模型</h2>
+  <p class="sec-desc">平台围绕以下核心实体设计数据结构，字段定义直接影响功能实现与搜索体验。</p>
+
+  <div class="grid-2">
+    <div>
+      <h4 style="margin-bottom:12px">Pet（宠物）</h4>
+      <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+        <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>UUID</td><td>唯一标识</td></tr>
+          <tr><td><code>name</code></td><td>String</td><td>宠物名称</td></tr>
+          <tr><td><code>type</code></td><td>Enum</td><td>cat/dog/rabbit/hamster…</td></tr>
+          <tr><td><code>breed</code></td><td>String</td><td>品种</td></tr>
+          <tr><td><code>age_months</code></td><td>Int</td><td>月龄（估算）</td></tr>
+          <tr><td><code>gender</code></td><td>Enum</td><td>male/female/unknown</td></tr>
+          <tr><td><code>city</code></td><td>String</td><td>城市编码</td></tr>
+          <tr><td><code>location</code></td><td>GeoPoint</td><td>经纬度（模糊至街道）</td></tr>
+          <tr><td><code>status</code></td><td>Enum</td><td>draft/review/available…</td></tr>
+          <tr><td><code>health_tags</code></td><td>Array</td><td>已接种/绝育/驱虫等</td></tr>
+          <tr><td><code>trait_tags</code></td><td>Array</td><td>性格标签，最多5个</td></tr>
+          <tr><td><code>description</code></td><td>Text</td><td>自由文本描述，≤500字</td></tr>
+          <tr><td><code>requirements</code></td><td>Array</td><td>领养要求列表</td></tr>
+          <tr><td><code>media</code></td><td>Array</td><td>图片/视频URL数组</td></tr>
+          <tr><td><code>owner_id</code></td><td>UUID FK</td><td>发布者用户ID</td></tr>
+          <tr><td><code>view_count</code></td><td>Int</td><td>浏览次数</td></tr>
+          <tr><td><code>fav_count</code></td><td>Int</td><td>收藏次数</td></tr>
+          <tr><td><code>created_at</code></td><td>DateTime</td><td>发布时间</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h4 style="margin-bottom:12px">AdoptionRequest（领养申请）</h4>
+      <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:20px">
+        <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>UUID</td><td>申请ID</td></tr>
+          <tr><td><code>pet_id</code></td><td>UUID FK</td><td>目标宠物</td></tr>
+          <tr><td><code>applicant_id</code></td><td>UUID FK</td><td>申请人</td></tr>
+          <tr><td><code>status</code></td><td>Enum</td><td>pending/accepted/rejected/completed</td></tr>
+          <tr><td><code>real_name</code></td><td>String</td><td>真实姓名（加密）</td></tr>
+          <tr><td><code>phone</code></td><td>String</td><td>联系电话（加密）</td></tr>
+          <tr><td><code>living_type</code></td><td>Enum</td><td>owned/rented/family</td></tr>
+          <tr><td><code>family_info</code></td><td>JSON</td><td>家庭成员情况</td></tr>
+          <tr><td><code>pet_experience</code></td><td>Text</td><td>养宠经历</td></tr>
+          <tr><td><code>motivation</code></td><td>Text</td><td>领养动机（≤300字）</td></tr>
+          <tr><td><code>created_at</code></td><td>DateTime</td><td>申请时间</td></tr>
+        </tbody>
+      </table>
+
+      <h4 style="margin-bottom:12px">Message（消息）</h4>
+      <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+        <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>id</code></td><td>UUID</td><td>消息ID</td></tr>
+          <tr><td><code>conversation_id</code></td><td>UUID</td><td>会话（user_a + user_b + pet_id 组合唯一）</td></tr>
+          <tr><td><code>sender_id</code></td><td>UUID FK</td><td>发送者</td></tr>
+          <tr><td><code>type</code></td><td>Enum</td><td>text/image/pet_card/location/system</td></tr>
+          <tr><td><code>content</code></td><td>Text/JSON</td><td>消息内容（依类型而定）</td></tr>
+          <tr><td><code>read_at</code></td><td>DateTime?</td><td>已读时间</td></tr>
+          <tr><td><code>created_at</code></td><td>DateTime</td><td>发送时间</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── DESIGN SYSTEM ───────────────────────────────────── -->
+<section class="section" id="design-system">
+<div class="container">
+  <div class="sec-eyebrow">设计系统</div>
+  <h2 class="sec-title">颜色与字体</h2>
+  <p class="sec-desc">统一的设计令牌（Design Token）确保跨平台（iOS / Android / H5）视觉一致性。</p>
+
+  <h4 style="margin-bottom:16px">核心色板</h4>
+  <div class="color-palette">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#E8593C"></div>
+      <div class="swatch-info"><div class="swatch-name">Brand / Primary</div><div class="swatch-hex">#E8593C</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#B83D24"></div>
+      <div class="swatch-info"><div class="swatch-name">Brand Dark</div><div class="swatch-hex">#B83D24</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FFF0EC"></div>
+      <div class="swatch-info"><div class="swatch-name">Brand Light</div><div class="swatch-hex">#FFF0EC</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1A1612"></div>
+      <div class="swatch-info"><div class="swatch-name">Ink / Text</div><div class="swatch-hex">#1A1612</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1D9E75"></div>
+      <div class="swatch-info"><div class="swatch-name">Success</div><div class="swatch-hex">#1D9E75</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#BA7517"></div>
+      <div class="swatch-info"><div class="swatch-name">Warning</div><div class="swatch-hex">#BA7517</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#185FA5"></div>
+      <div class="swatch-info"><div class="swatch-name">Info</div><div class="swatch-hex">#185FA5</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#FAFAF8"></div>
+      <div class="swatch-info"><div class="swatch-name">Background</div><div class="swatch-hex">#FAFAF8</div></div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:32px">
+    <div>
+      <h4 style="margin-bottom:16px">字体规格</h4>
+      <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+        <thead><tr><th>用途</th><th>字号</th><th>字重</th><th>行高</th></tr></thead>
+        <tbody>
+          <tr><td>大标题 Display</td><td>28–44px</td><td>900 Black</td><td>1.15</td></tr>
+          <tr><td>页面标题 H1</td><td>22–28px</td><td>700 Bold</td><td>1.25</td></tr>
+          <tr><td>模块标题 H2</td><td>18px</td><td>700 Bold</td><td>1.3</td></tr>
+          <tr><td>卡片标题 H3</td><td>15px</td><td>600 SemiBold</td><td>1.4</td></tr>
+          <tr><td>正文 Body</td><td>14–15px</td><td>400 Regular</td><td>1.75</td></tr>
+          <tr><td>次要文字</td><td>13px</td><td>400 Regular</td><td>1.6</td></tr>
+          <tr><td>辅助/标注</td><td>11–12px</td><td>400–500</td><td>1.5</td></tr>
+          <tr><td>标签/徽章</td><td>10–12px</td><td>500 Medium</td><td>1.2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h4 style="margin-bottom:16px">圆角 & 间距规范</h4>
+      <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px">
+        <thead><tr><th>Token</th><th>值</th><th>应用场景</th></tr></thead>
+        <tbody>
+          <tr><td><code>radius-sm</code></td><td>6px</td><td>标签、按钮</td></tr>
+          <tr><td><code>radius-md</code></td><td>10px</td><td>卡片、输入框</td></tr>
+          <tr><td><code>radius-lg</code></td><td>16px</td><td>大卡片、弹窗</td></tr>
+          <tr><td><code>radius-xl</code></td><td>24px</td><td>底栏、手机帧</td></tr>
+          <tr><td><code>radius-full</code></td><td>9999px</td><td>Chip、Pill、头像</td></tr>
+        </tbody>
+      </table>
+      <table class="info-table" style="border:1px solid var(--line);border-radius:10px;overflow:hidden">
+        <thead><tr><th>Token</th><th>值</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><code>space-xs</code></td><td>4px</td><td>图标与文字间距</td></tr>
+          <tr><td><code>space-sm</code></td><td>8px</td><td>标签组 gap</td></tr>
+          <tr><td><code>space-md</code></td><td>16px</td><td>卡片内 padding</td></tr>
+          <tr><td><code>space-lg</code></td><td>24px</td><td>页面 section padding</td></tr>
+          <tr><td><code>space-xl</code></td><td>40px</td><td>大区块间距</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── COMPONENTS ──────────────────────────────────────── -->
+<section class="section" id="components">
+<div class="container">
+  <div class="sec-eyebrow">设计系统</div>
+  <h2 class="sec-title">组件规范</h2>
+  <p class="sec-desc">核心 UI 组件的视觉规范与交互状态定义，开发实现时应严格遵守。</p>
+
+  <div class="grid-3">
+    <!-- Buttons -->
+    <div class="card">
+      <h4 style="margin-bottom:14px">按钮</h4>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="padding:11px 20px;background:var(--brand);color:#fff;border-radius:8px;font-size:14px;font-weight:500;text-align:center">主要按钮</div>
+        <div style="padding:11px 20px;background:var(--brand-light);color:var(--brand-dark);border-radius:8px;font-size:14px;font-weight:500;text-align:center;border:1px solid rgba(232,89,60,.2)">次要按钮</div>
+        <div style="padding:11px 20px;background:transparent;color:var(--brand);border-radius:8px;font-size:14px;font-weight:500;text-align:center;border:1px solid var(--brand)">描边按钮</div>
+        <div style="padding:11px 20px;background:var(--bg-2);color:var(--ink-3);border-radius:8px;font-size:14px;text-align:center;border:1px solid var(--line)">禁用状态</div>
+      </div>
+    </div>
+
+    <!-- Status Badges -->
+    <div class="card">
+      <h4 style="margin-bottom:14px">状态标签</h4>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-green">🟢 待领养</span>
+          <span style="font-size:11px;color:var(--ink-3)">正常可申请</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-amber">📬 申请中</span>
+          <span style="font-size:11px;color:var(--ink-3)">有申请处理中</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-blue">🤝 交接中</span>
+          <span style="font-size:11px;color:var(--ink-3)">确认完成交接</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-gray">🏠 已领养</span>
+          <span style="font-size:11px;color:var(--ink-3)">领养完成</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-brand">⛔ 已关闭</span>
+          <span style="font-size:11px;color:var(--ink-3)">下架关闭</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-green">✓ 认证机构</span>
+          <span style="font-size:11px;color:var(--ink-3)">已认证标志</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast / Alert -->
+    <div class="card">
+      <h4 style="margin-bottom:14px">消息提示</h4>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="padding:10px 12px;background:#E1F5EE;border-radius:8px;font-size:12px;color:#0F6E56;display:flex;gap:7px;align-items:flex-start;border:1px solid #9FE1CB"><span>✅</span> 领养申请已提交，等待发布者审核</div>
+        <div style="padding:10px 12px;background:#FAEEDA;border-radius:8px;font-size:12px;color:#854F0B;display:flex;gap:7px;align-items:flex-start;border:1px solid #FAC775"><span>⚠️</span> 该宠物今日消息发送量已达上限</div>
+        <div style="padding:10px 12px;background:#FCEBEB;border-radius:8px;font-size:12px;color:#A32D2D;display:flex;gap:7px;align-items:flex-start;border:1px solid #F7C1C1"><span>❌</span> 内容审核未通过：含有疑似收费文字</div>
+        <div style="padding:10px 12px;background:#E6F1FB;border-radius:8px;font-size:12px;color:#185FA5;display:flex;gap:7px;align-items:flex-start;border:1px solid #B5D4F4"><span>ℹ️</span> 该宠物正在审核中，预计2小时内完成</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── ROADMAP ──────────────────────────────────────────── -->
+<section class="section" id="roadmap">
+<div class="container">
+  <div class="sec-eyebrow">交付计划</div>
+  <h2 class="sec-title">迭代路线图</h2>
+  <p class="sec-desc">分三个阶段交付，优先建设核心领养闭环，再逐步丰富社区和智能化功能。</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot tl-dot-active"></div>
+      <div class="tl-phase">Phase 1 · 第1–8周</div>
+      <div class="tl-title">MVP · 领养核心闭环</div>
+      <p style="font-size:13px;color:var(--ink-2);margin-bottom:10px;line-height:1.7">构建最小可用版本，完成宠物发布 → 申请 → 消息 → 交接的完整链路。</p>
+      <div class="tl-tags">
+        <span class="tag">注册/登录</span>
+        <span class="tag">宠物发布（4步骤）</span>
+        <span class="tag">首页列表+筛选</span>
+        <span class="tag">宠物详情页</span>
+        <span class="tag">领养申请表单</span>
+        <span class="tag">站内即时消息</span>
+        <span class="tag">个人主页</span>
+        <span class="tag">状态机完整流转</span>
+        <span class="tag">推送通知</span>
+        <span class="tag">内容人工审核后台</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--ink-3)"></div>
+      <div class="tl-phase">Phase 2 · 第9–16周</div>
+      <div class="tl-title">增长 · 信任与社区</div>
+      <p style="font-size:13px;color:var(--ink-2);margin-bottom:10px;line-height:1.7">建立信任体系与社区氛围，提升留存率与口碑传播。</p>
+      <div class="tl-tags">
+        <span class="tag">用户评价系统</span>
+        <span class="tag">认证机构申请流程</span>
+        <span class="tag">实名认证（选）</span>
+        <span class="tag">收藏/关注功能</span>
+        <span class="tag">健康档案上传</span>
+        <span class="tag">领养成功回访提醒</span>
+        <span class="tag">分享到社交媒体</span>
+        <span class="tag">地图浏览模式</span>
+        <span class="tag">机构专属主页</span>
+        <span class="tag">AI内容审核辅助</span>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot" style="border-color:var(--ink-3)"></div>
+      <div class="tl-phase">Phase 3 · 第17–24周</div>
+      <div class="tl-title">智能化 · 精准匹配</div>
+      <p style="font-size:13px;color:var(--ink-2);margin-bottom:10px;line-height:1.7">引入算法推荐与智能辅助，大幅提升匹配效率与用户体验。</p>
+      <div class="tl-tags">
+        <span class="tag">个性化推荐算法</span>
+        <span class="tag">AI品种自动识别</span>
+        <span class="tag">领养动机分析评分</span>
+        <span class="tag">成长日记（领养后）</span>
+        <span class="tag">视频帖子支持</span>
+        <span class="tag">救助机构数据报表</span>
+        <span class="tag">批量导入工具</span>
+        <span class="tag">公益活动模块</span>
+        <span class="tag">微信/支付宝小程序</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ── TECH STACK ───────────────────────────────────────── -->
+<section class="section" id="tech">
+<div class="container">
+  <div class="sec-eyebrow">交付计划</div>
+  <h2 class="sec-title">技术选型建议</h2>
+  <p class="sec-desc">基于产品需求（移动优先、实时消息、地理位置）给出的技术栈参考，最终由研发团队确认。</p>
+
+  <div class="grid-3">
+    <div class="feat-card">
+      <div class="feat-icon feat-icon-brand">📱</div>
+      <div class="feat-title">移动端</div>
+      <div class="feat-desc">
+        <strong>React Native</strong>（iOS + Android 一套代码）<br>
+        或 <strong>Flutter</strong>（更高性能，适合动画丰富场景）<br>
+        H5/小程序：<strong>Taro</strong> 跨端方案
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon feat-icon-green">⚙️</div>
+      <div class="feat-title">后端服务</div>
+      <div class="feat-desc">
+        API：<strong>Node.js (NestJS)</strong> 或 <strong>Go (Gin)</strong><br>
+        数据库：<strong>PostgreSQL</strong>（关系型）+ <strong>Redis</strong>（缓存/会话）<br>
+        搜索：<strong>Elasticsearch</strong>（宠物全文搜索+地理位置）
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon feat-icon-blue">💬</div>
+      <div class="feat-title">即时通讯</div>
+      <div class="feat-desc">
+        自建：<strong>WebSocket</strong> + <strong>Redis Pub/Sub</strong><br>
+        或接入第三方：<strong>腾讯云 IM</strong> / <strong>环信</strong><br>
+        推送：<strong>APNs</strong>（iOS）+ <strong>FCM/个推</strong>（Android）
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon feat-icon-amber">🖼</div>
+      <div class="feat-title">媒体存储</div>
+      <div class="feat-desc">
+        图片/视频：<strong>阿里云 OSS</strong> 或 <strong>腾讯云 COS</strong><br>
+        CDN：<strong>阿里云 CDN</strong>，全国节点加速<br>
+        图片处理：OSS 图片缩略图服务（无需额外开发）
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon feat-icon-brand">🤖</div>
+      <div class="feat-title">AI 能力</div>
+      <div class="feat-desc">
+        品种识别：<strong>百度 EasyDL</strong> 或自训练 MobileNet<br>
+        内容审核：<strong>阿里云绿网</strong>（图片 + 文本）<br>
+        推荐系统：协同过滤 + 内容向量（Phase 3）
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon feat-icon-green">☁️</div>
+      <div class="feat-title">基础设施</div>
+      <div class="feat-desc">
+        容器化：<strong>Docker</strong> + <strong>Kubernetes</strong><br>
+        CI/CD：<strong>GitHub Actions</strong><br>
+        监控：<strong>Grafana</strong> + <strong>Prometheus</strong><br>
+        日志：<strong>阿里云 SLS</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="margin-top:56px;padding:28px;background:var(--ink);border-radius:var(--r-lg);color:rgba(255,255,255,.6);font-size:13px;line-height:1.8">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px">
+      <div>
+        <div style="font-size:18px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:6px">毛毛<span style="color:var(--brand)">家</span></div>
+        <div>产品设计文档 v1.0 · 2026年3月</div>
+        <div style="margin-top:4px">本文档为初版设计方案，最终实现细节以研发评估为准</div>
+      </div>
+      <div style="text-align:right">
+        <div style="color:rgba(255,255,255,.85);font-weight:500;margin-bottom:4px">文档包含</div>
+        <div>6个核心页面设计 · 完整状态机 · 数据模型</div>
+        <div>权限矩阵 · 设计系统 · 3期迭代路线</div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+// Progress bar
+window.addEventListener('scroll', () => {
+  const el = document.getElementById('progress');
+  const s = document.documentElement.scrollTop;
+  const h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  el.style.width = (s / h * 100) + '%';
+});
+
+// Smooth scroll
+function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  // Update active nav
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  event.target.closest('.nav-link')?.classList.add('active');
+}
+
+// Highlight current section on scroll
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.nav-link');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY + 100 >= s.offsetTop) current = s.id;
+  });
+  links.forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('onclick')?.includes(current)) l.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
