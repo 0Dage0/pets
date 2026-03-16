@@ -37,7 +37,7 @@ public class User {
     @Column(name = "adopt_count")
     private Integer adoptCount = 0;
 
-    @Column(precision = 2, scale = 1)
+    @Column(columnDefinition = "DOUBLE DEFAULT 5.0")
     private Double rating = 5.0;
 
     @Column(name = "created_at")
