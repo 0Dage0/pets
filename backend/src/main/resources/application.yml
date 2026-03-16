@@ -6,10 +6,10 @@ spring:
     name: pet-adoption
 
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/pet_adoption?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    url: jdbc:postgresql://your-db-host:5432/pet_adoption
     username: root
     password: 123456
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
